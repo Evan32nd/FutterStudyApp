@@ -27,18 +27,28 @@ class DataUploader extends GetxController {
     List<QuestionPaperModel> questionPapers = [];
     for (var paper in papersInAssets) {
       String stringPaperContent = await rootBundle.loadString(paper);
-      questionPapers.add(QuestionPaperModel.fromJson(json.decode(stringPaperContent)));
+      questionPapers
+          .add(QuestionPaperModel.fromJson(json.decode(stringPaperContent)));
     }
     // print("Items number ${questionPapers[0].questions![0].question}");
     var batch = fireStore.batch();
 
-    for( var paper in questionPapers) {
-      batch.set(questionPaperRF.doc(paper.id), {"title":paper.title,
-      "image_url":paper.imageUrl,
-      "description":paper.description,
-      "time_seconds":paper.timeSeconds,
-      "question_count":paper.questions==null?0:paper.questions!.length
+    for (var paper in questionPapers) {
+      batch.set(questionPaperRF.doc(paper.id), {
+        "title": paper.title,
+        "image_url": paper.imageUrl,
+        "description": paper.description,
+        "time_seconds": paper.timeSeconds,
+        "question_count": paper.questions == null ? 0 : paper.questions!.length
       });
+
+      for (var questions in paper.questions!) {
+        final questionPath = questionRF(paperId: paper.id, questionId: questions.id);
+        batch.set(questionPath, {
+          "question": questions.question,
+          "correct_answer": questions.correctAnswer,
+        });
+      }
     }
 
     await batch.commit();
