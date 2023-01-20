@@ -1,13 +1,17 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_study/bindings/initial_bindings.dart';
 import 'package:flutter_study/data_upload_screen.dart';
 import 'package:flutter_study/firebase_options.dart';
+import 'package:flutter_study/routes/app_routes.dart';
 import 'package:flutter_study/screens/introduction/introduction.dart';
 import 'package:flutter_study/screens/splash/splash_screen.dart';
 import 'package:get/get.dart';
 
 void main() {
-  runApp(MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  InitialBindings().dependencies();
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -15,9 +19,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: AppIntroductionScreen(),
-    );
+    return GetMaterialApp(getPages: AppRoutes.routes(),);
   }
 }
 
